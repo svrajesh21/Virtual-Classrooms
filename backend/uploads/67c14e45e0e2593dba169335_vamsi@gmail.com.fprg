@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="3.0">
+    <attributes>
+        <attribute name="name" value=""/>
+        <attribute name="authors" value="vamsi krishna"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2023-01-07 11:50:32 AM"/>
+        <attribute name="created" value="dmFtc2kga3Jpc2huYTtMQVBUT1AtOUE3N0FBSjg7MjAyMy0wMS0wNzsxMTo0Mjo0OCBBTTszNTkz"/>
+        <attribute name="edited" value="dmFtc2kga3Jpc2huYTtMQVBUT1AtOUE3N0FBSjg7MjAyMy0wMS0wNzsxMTo0Mjo1NiBBTTsxO3ZhbXNpIGtyaXNobmE7TEFQVE9QLTlBNzdBQUo4OzIwMjMtMDEtMDc7MTE6MjE6MzEgQU07OXRoIHEgc3RyaW5ncy5mcHJnOzkxMDk="/>
+        <attribute name="edited" value="dmFtc2kga3Jpc2huYTtMQVBUT1AtOUE3N0FBSjg7MjAyMy0wMS0wNzsxMTo1MDozMiBBTTsxOzM2OTM="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <declare name="k, m" type="String" array="False" size=""/>
+            <declare name="j, i, n, l" type="Integer" array="False" size=""/>
+            <input variable="k"/>
+            <assign variable="l" expression="ToCode(k)"/>
+            <assign variable="l" expression="l-32"/>
+            <assign variable="m" expression="ToChar(l)"/>
+            <output expression="m" newline="True"/>
+        </body>
+    </function>
+</flowgorithm>

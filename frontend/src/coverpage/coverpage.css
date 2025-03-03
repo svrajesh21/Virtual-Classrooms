@@ -1,0 +1,303 @@
+/* CoverPage.css */
+/* General Styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+  
+  scroll-behavior: smooth; /* Smooth scrolling */
+}
+
+/* Cover Page */
+.cover-page {
+  position: relative;
+  z-index: 2;
+}
+
+section {
+  padding: 100px 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+}
+
+.cover-content {
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+}
+
+.cover-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  background: linear-gradient(45deg, #f5f5f5, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: slideIn 1.5s ease-in-out;
+}
+
+.cover-content p {
+  font-size: 1.5rem;
+  margin-bottom: 30px;
+  animation: slideIn 2s ease-in-out;
+}
+
+.login-button {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  color: white;
+  background: linear-gradient(45deg, #ff6f61, #ff4a3d);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: bounce 2s infinite;
+}
+
+.login-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px rgba(255, 111, 97, 0.4);
+}
+
+/* About Us Section */
+.about-us {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  margin: 20px auto;
+  padding: 40px;
+  max-width: 800px;
+  text-align: center;
+  position: relative;
+  bottom: 0;
+}
+
+.about-us h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  background: linear-gradient(45deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.about-us p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+}
+
+/* Features Section */
+.features {
+  background: linear-gradient(135deg, #24243e, #302b63);
+}
+
+.card-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin: 50px auto;
+  max-width: 1200px;
+}
+
+.card {
+  width: 300px;
+  height: 200px;
+  margin: 20px;
+  perspective: 1000px;
+  cursor: pointer;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+.card:hover {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.6s ease;
+}
+
+.card-front {
+  background: linear-gradient(45deg, #6a11cb, #2575fc);
+  color: white;
+  font-size: 1.5rem;
+}
+
+.card-back {
+  background: linear-gradient(45deg, #e69b95, #f0aba7);
+  color: white;
+  transform: rotateY(180deg);
+  font-size: 1.2rem;
+  padding: 20px;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+/* Testimonials Section */
+.testimonials {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  margin: 20px auto;
+  padding: 40px;
+  max-width: 800px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.testimonial-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.testimonial {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 10px;
+  max-width: 300px;
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.testimonial p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.testimonial span {
+  font-size: 0.9rem;
+  color: #ff6f61;
+}
+
+/* Contact Us Section */
+.contact-us {
+  background: linear-gradient(135deg, #302b63, #24243e);
+}
+
+.contact-us form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.contact-us input, .contact-us textarea {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+}
+
+.contact-us textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.contact-us button {
+  padding: 15px 30px;
+  font-size: 1.5 rem;
+  color: white;
+  background: linear-gradient(45deg, #9cf1df, #2d8079);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-us button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 24px rgba(255, 111, 97, 0.4);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .cover-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .cover-content p {
+    font-size: 1 rem;
+  }
+
+  .about-us h2 {
+    font-size: 2rem;
+  }
+
+  .about-us p {
+    font-size: 1rem;
+  }
+
+  .card {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .testimonial-container {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="3.0">
+    <attributes>
+        <attribute name="name" value=""/>
+        <attribute name="authors" value="vamsi krishna"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2023-01-06 05:56:40 PM"/>
+        <attribute name="created" value="dmFtc2kga3Jpc2huYTtMQVBUT1AtOUE3N0FBSjg7MjAyMy0wMS0wNjswNTo1MzozMCBQTTszNjAz"/>
+        <attribute name="edited" value="dmFtc2kga3Jpc2huYTtMQVBUT1AtOUE3N0FBSjg7MjAyMy0wMS0wNjswNTo1Njo0MCBQTTsxOzM3MTU="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <output expression="&quot;enter the string&quot;" newline="True"/>
+            <declare name="l" type="Integer" array="False" size=""/>
+            <declare name="k" type="String" array="False" size=""/>
+            <input variable="k"/>
+            <assign variable="l" expression="len(k)"/>
+            <output expression="&quot;length of the string is &quot;&amp;l" newline="True"/>
+        </body>
+    </function>
+</flowgorithm>
