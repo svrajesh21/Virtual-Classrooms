@@ -8,25 +8,66 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [role, setRole] = useState("Student"); // Default to Student
     const [error, setError] = useState(""); // State for error messages
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(""); // Reset error message
+        setError("");
+        setLoading(true);
 
         try {
-            const res = await axios.post("http://localhost:5000/api/login", { email, password, role });
-            alert(res.data.message);
-            if (res.data.success) {
-                // Save email to localStorage based on role
-                localStorage.setItem(`${role.toLowerCase()}Email`, email);
+            console.log('Attempting login with:', { email, password, role });
+            const response = await axios.post('http://localhost:5000/api/login', {
+                email,
+                password,
+                role
+            });
 
-                // Navigate to the appropriate dashboard
-                navigate(`/${role.toLowerCase()}-dashboard`);
+            console.log('Login response:', response.data);
+
+            if (response.data.success) {
+                // Store user information in localStorage
+                localStorage.setItem('userEmail', response.data.email);
+                localStorage.setItem('userRole', response.data.role);
+                
+                if (response.data.role === "Teacher") {
+                    localStorage.setItem('teacherEmail', response.data.email);
+                    localStorage.setItem('teacherName', response.data.name);
+                    localStorage.setItem('teacherId', response.data.id);
+                    console.log('Stored teacher info:', {
+                        email: response.data.email,
+                        name: response.data.name,
+                        id: response.data.id
+                    });
+                } else {
+                    // Store student information
+                    localStorage.setItem('studentEmail', response.data.email);
+                    localStorage.setItem('studentName', response.data.fullName);
+                    localStorage.setItem('studentId', response.data.id);
+                    localStorage.setItem('studentCourse', response.data.course);
+                    console.log('Stored student info:', {
+                        email: response.data.email,
+                        fullName: response.data.fullName,
+                        id: response.data.id,
+                        course: response.data.course
+                    });
+                }
+
+                // Redirect based on role
+                if (response.data.role === "Teacher") {
+                    navigate('/teacher-dashboard');
+                } else {
+                    navigate('/student-dashboard');
+                }
+            } else {
+                setError(response.data.message || 'Login failed');
             }
-        } catch (err) {
-            setError("Invalid credentials or something went wrong!");
-            alert(error); // Display error message
+        } catch (error) {
+            console.error('Login error:', error);
+            setError(error.response?.data?.message || 'Login failed. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 

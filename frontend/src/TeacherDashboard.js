@@ -62,7 +62,7 @@ const TeacherDashboard = () => {
                     <span></span>
                     <span></span>
                 </div>
-                 Teacher Dashboard
+                Teacher Dashboard
             </div>
 
             <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
@@ -100,19 +100,20 @@ const TeacherDashboard = () => {
                             <div className="course-text">
                                 <h2> "Virtual classrooms bridge the gap between learners and knowledge, making education accessible to all." </h2>
                                 <p>– UNESCO</p>
-                                                            </div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div className="features-wrapper">
-    <div className="feature-container" onClick={() => navigate("/create-assignments")}>📝 Create Assignments</div>
-    <div className="feature-container" onClick={() => navigate("/assignments")}>📂 View Submitted Assignments</div>
-    <div className="feature-container">📚 Upload Resources</div>
-    <div className="feature-container">📅 Schedule Classes</div>
-    <div className="feature-container">📊 Update Attendance</div>
-    <div className="feature-container">📈 Performance Reports</div>
-</div>
 
+                    <div className="features-wrapper">
+                        <div className="feature-container" onClick={() => navigate("/create-assignments")}>📝 Create Assignments</div>
+                        <div className="feature-container" onClick={() => navigate("/assignments")}>📂 View Submitted Assignments</div>
+                        <div className="feature-container" onClick={() => navigate("/upload-classes")}>🎥 Upload Classes</div> {/* New Option */}
+                        <div className="feature-container" onClick={() => navigate("/Upload-Resource")}>📚 Upload Resources</div>
+                        <div className="feature-container" onClick={() => navigate("/create-quiz")}>📅 Create quizzes</div>
+                        <div className="feature-container" onClick={() => navigate("/video-list")}>📊 Video Attendance</div>
+                        <div className="feature-container" onClick={() => navigate("/teacher-Questions")}>📊 Student Queries</div>
+                        <div className="feature-container" onClick={() => navigate("/Teacher-Performance")}>📈 Performance Reports</div>
+                    </div>
                 </div>
             </div>
 

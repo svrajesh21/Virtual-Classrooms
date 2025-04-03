@@ -1,0 +1,70 @@
+/* TakeQuiz.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0; /* Light background for the page */
+}
+
+.quiz-list {
+    max-width: 800px;
+    margin: 50px auto; /* Center the container and add some top margin */
+    padding: 20px;
+    background-color: #fff; /* White background for the quiz list */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.quiz-list h1 {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.quiz-list ul {
+    list-style-type: none; /* Remove default bullet points */
+    padding: 0;
+    margin: 0;
+}
+
+.quiz-list li {
+    padding: 15px;
+    margin: 10px 0;
+    background-color: #f9f9f9; /* Light background for each quiz item */
+    border-radius: 5px;
+    border: 1px solid #ddd; /* Light border for separation */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+}
+
+.quiz-list li:hover {
+    background-color: #e0e0e0; /* Darker background on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+.quiz-list li:active {
+    transform: translateY(0); /* Reset lift effect when clicked */
+}
+
+.quiz-list li::before {
+    content: "📝"; /* Add an emoji or icon before each quiz item */
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .quiz-list {
+        margin: 20px;
+        padding: 15px;
+    }
+
+    .quiz-list h1 {
+        font-size: 1.8rem;
+    }
+
+    .quiz-list li {
+        padding: 10px;
+    }
+}

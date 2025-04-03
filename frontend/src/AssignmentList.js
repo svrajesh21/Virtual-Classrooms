@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./AssignmentList.css"; // Correct CSS import
 
 const TeacherView = () => {
     const [teacherAssignments, setTeacherAssignments] = useState([]);
@@ -46,14 +47,14 @@ const TeacherView = () => {
     };
 
     return (
-        <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <div className="assignment-list-container">
             <h2>Teacher View: Submitted Assignments</h2>
-            {message && <p style={{ color: "red" }}>{message}</p>}
+            {message && <p className="message">{message}</p>}
 
             {/* List of Assignments */}
             <h3>Your Assignments</h3>
             {teacherAssignments.length > 0 ? (
-                <ul>
+                <ul className="assignments-list">
                     {teacherAssignments.map((assignment) => (
                         <li key={assignment._id}>
                             <strong>{assignment.title}</strong> - {assignment.description} (Due: {assignment.dueDate})
@@ -62,7 +63,7 @@ const TeacherView = () => {
                     ))}
                 </ul>
             ) : (
-                <p>No assignments posted yet.</p>
+                <p className="no-data-message">No assignments posted yet.</p>
             )}
 
             {/* List of Submissions for Selected Assignment */}
@@ -70,7 +71,7 @@ const TeacherView = () => {
                 <div>
                     <h3>Submissions for Selected Assignment</h3>
                     {submissions.length > 0 ? (
-                        <ul>
+                        <ul className="submissions-list">
                             {submissions.map((submission) => (
                                 <li key={submission._id}>
                                     <strong>{submission.assignmentTitle}</strong> - Submitted by: {submission.email}
@@ -81,7 +82,7 @@ const TeacherView = () => {
                             ))}
                         </ul>
                     ) : (
-                        <p>No submissions yet.</p>
+                        <p className="no-data-message">No submissions yet.</p>
                     )}
                 </div>
             )}

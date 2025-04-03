@@ -6,27 +6,86 @@ const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const crypto = require("crypto"); // To generate a reset token
-const nodemailer = require("nodemailer"); // For sending emails
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+const Video = require("./models/videoSchema");
+
 
 const app = express();
+
+// Request logging middleware - MUST be at the top
+app.use((req, res, next) => {
+    console.log('\n=== New Request ===');
+    console.log('Time:', new Date().toISOString());
+    console.log('Method:', req.method);
+    console.log('Path:', req.path);
+    console.log('Query:', req.query);
+    console.log('Body:', req.body);
+    console.log('Headers:', req.headers);
+    console.log('==================\n');
+    next();
+});
+
+// Basic middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
+// Add route logging middleware
+app.use((req, res, next) => {
+    console.log(`\n=== Route Handler ===`);
+    console.log(`Handling ${req.method} ${req.path}`);
+    console.log(`==================\n`);
+    next();
+});
+
+// Test route for questions endpoint - MUST be at the top
+app.get("/api/test/questions", (req, res) => {
+    console.log('Test route hit');
+    res.json({ message: "Questions endpoint is accessible" });
+});
+
+const Attendance = require("./models/attendanceSchema");
+const resourceRoutes = require("./routes/resourceRoutes");
+
+app.use("/api", resourceRoutes);
+
+// Import Quiz Routes
+const quizRoutes = require("./routes/quizRoutes");
+app.use("/api", quizRoutes);
 
 // Nodemailer configuration
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-        user: process.env.EMAIL_USER, // Your email address
-        pass: process.env.EMAIL_PASS, // Your email password or app-specific password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
     },
 });
 
 // MongoDB Connection
 const mongoURI = "mongodb://localhost:27017/Virtual";
+console.log('Attempting to connect to MongoDB...');
 mongoose.connect(mongoURI)
-    .then(() => console.log("✅ MongoDB Connected"))
-    .catch(err => console.error("❌ MongoDB Connection Error:", err));
+    .then(() => {
+        console.log("✅ MongoDB Connected Successfully");
+        // Test database connection by listing collections
+        mongoose.connection.db.listCollections().toArray((err, collections) => {
+            if (err) {
+                console.error('Error listing collections:', err);
+            } else {
+                console.log('Available collections:', collections.map(c => c.name));
+            }
+        });
+    })
+    .catch(err => {
+        console.error("❌ MongoDB Connection Error:", err);
+        console.error("Connection details:", {
+            uri: mongoURI,
+            error: err.message,
+            stack: err.stack
+        });
+    });
 
 // Student Schema
 const StudentSchema = new mongoose.Schema({
@@ -70,48 +129,35 @@ if (!fs.existsSync(uploadsDir)) {
 // Create the Submission model
 const Submission = mongoose.model("Submission", submissionSchema);
 
-// Add body parsing middleware
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(cors());
-
-const upload = multer().single("assignmentFile"); // Parse form data without saving the file
+const upload = multer().single("assignmentFile");
 
 // Contact Us Endpoint
 app.post("/api/contact", async (req, res) => {
     const { name, email, message } = req.body;
   
-    // Validate input fields
     if (!name || !email || !message) {
       return res.status(400).json({ message: "All fields are required" });
     }
   
     try {
-        
-      // Configure the email options
-      const mailOptions = {
-        from: process.env.EMAIL_USER, // Sender email (mvamsikrishna78877887@gmail.com)
-        to: "vamsikrishnameka07@gmail.com", // Admin email
-        subject: `New Contact Form Submission from ${name}`, // Email subject
-        text: `
-          Name: ${name}
-          Email: ${email}
-          Message: ${message}
-        `, // Email body
-      };
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: "vamsikrishnameka07@gmail.com",
+            subject: `New Contact Form Submission from ${name}`,
+            text: `
+                Name: ${name}
+                Email: ${email}
+                Message: ${message}
+            `,
+        };
   
-      // Use nodemailer to send the email
-      await transporter.sendMail(mailOptions);
-  
-      // Send success response
-      res.json({ message: "Message sent successfully!" });
+        await transporter.sendMail(mailOptions);
+        res.json({ message: "Message sent successfully!" });
     } catch (err) {
-      // Log the error and send error response
-      console.error("Error in /api/contact:", err);
-      res.status(500).json({ message: "Error sending message", error: err.message });
+        console.error("Error in /api/contact:", err);
+        res.status(500).json({ message: "Error sending message", error: err.message });
     }
-  });
-
+});
 
 // Student Signup Route
 app.post("/api/signup", async (req, res) => {
@@ -136,7 +182,7 @@ app.post("/api/signup", async (req, res) => {
     }
 });
 
-// Teacher Registration (Only Admin Can Do This)
+// Teacher Registration
 app.post("/api/register-teacher", async (req, res) => {
     const { name, email, password, dob } = req.body;
     if (!name || !email || !password || !dob) {
@@ -162,23 +208,49 @@ app.post("/api/register-teacher", async (req, res) => {
 // Login Route
 app.post("/api/login", async (req, res) => {
     const { email, password, role } = req.body;
+
     if (!email || !password || !role) {
         return res.status(400).json({ message: "Please enter all fields" });
     }
 
-    const User = role === "Teacher" ? Teacher : Student;
-    const user = await User.findOne({ email });
+    try {
+        const User = role === "Teacher" ? Teacher : Student;
+        const user = await User.findOne({ email });
 
-    if (!user) {
-        return res.status(400).json({ success: false, message: "Invalid credentials" });
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid credentials" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: "Invalid credentials" });
+        }
+
+        if (role === "Teacher") {
+            return res.json({
+                success: true,
+                message: "Login successful",
+                email,
+                role,
+                name: user.name,
+                id: user._id,
+            });
+        } else {
+            // Student login response
+            return res.json({
+                success: true,
+                message: "Login successful",
+                email,
+                role,
+                fullName: user.fullName,
+                id: user._id,
+                course: user.course
+            });
+        }
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({ message: "Error logging in" });
     }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-        return res.status(400).json({ success: false, message: "Invalid credentials" });
-    }
-
-    res.json({ success: true, message: "Login successful", email, role });
 });
 
 // Forgot Password Endpoint
@@ -186,7 +258,6 @@ app.post("/api/forgot-password", async (req, res) => {
     const { email } = req.body;
 
     try {
-        // Check if email exists in Student or Teacher collection
         const student = await Student.findOne({ email });
         const teacher = await Teacher.findOne({ email });
         const user = student || teacher;
@@ -195,13 +266,11 @@ app.post("/api/forgot-password", async (req, res) => {
             return res.status(404).json({ message: "Email not found" });
         }
 
-        // Generate a reset token and set expiration time (e.g., 1 hour)
         const resetToken = crypto.randomBytes(20).toString("hex");
         user.resetPasswordToken = resetToken;
-        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        user.resetPasswordExpires = Date.now() + 3600000;
         await user.save();
 
-        // Send email with reset link
         const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
         const mailOptions = {
             from: process.env.EMAIL_USER,
@@ -210,9 +279,7 @@ app.post("/api/forgot-password", async (req, res) => {
             text: `Click the link to reset your password: ${resetLink}`,
         };
 
-        // Use nodemailer to send the email
         await transporter.sendMail(mailOptions);
-
         res.json({ message: "Password reset link sent to your email" });
     } catch (err) {
         console.error("Error in /api/forgot-password:", err);
@@ -222,12 +289,9 @@ app.post("/api/forgot-password", async (req, res) => {
 
 // Reset Password Endpoint
 app.post("/api/reset-password", async (req, res) => {
-    console.log("hiii");
     const { token, newPassword } = req.body;
-    
 
     try {
-        // Find user by reset token and check expiration
         const student = await Student.findOne({
             resetPasswordToken: token,
             resetPasswordExpires: { $gt: Date.now() },
@@ -238,25 +302,15 @@ app.post("/api/reset-password", async (req, res) => {
         });
         const user = student || teacher;
 
-        console.log("Token received:", token); // Debugging line
-        console.log("User found:", user); // Debugging line
-       
-
         if (!user) {
-            console.log("namaste");
             return res.status(400).json({ message: "Invalid or expired token" });
         }
 
-        // Hash the new password and update user
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        console.log("New hashed password:", hashedPassword); // Log the hashed password
-
         user.password = hashedPassword;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
         await user.save();
-
-        console.log("User password updated successfully:", user); // Log the updated user object
 
         res.json({ message: "Password reset successful" });
     } catch (err) {
@@ -265,11 +319,12 @@ app.post("/api/reset-password", async (req, res) => {
     }
 });
 
+// Assignment submission endpoint
 app.post("/api/submit-assignment", upload, async (req, res) => {
     try {
         const { assignmentId, assignmentTitle } = req.body;
-        const file = req.file; // Access the uploaded file
-        const studentEmail = req.headers["user-email"]; // Get email from headers
+        const file = req.file;
+        const studentEmail = req.headers["user-email"];
 
         if (!file) {
             return res.status(400).json({ message: "No file uploaded." });
@@ -278,16 +333,13 @@ app.post("/api/submit-assignment", upload, async (req, res) => {
             return res.status(400).json({ message: "User email not found." });
         }
 
-        // Generate a unique filename
         const uniqueKey = `${assignmentId}_${studentEmail}`;
         const fileExtension = path.extname(file.originalname);
         const fileName = `${uniqueKey}${fileExtension}`;
         const filePath = path.join(uploadsDir, fileName);
 
-        // Save the file to the uploads folder
         fs.writeFileSync(filePath, file.buffer);
 
-        // Save the file path and metadata in the database
         const newSubmission = new Submission({
             assignmentId,
             assignmentTitle,
@@ -319,20 +371,18 @@ app.get("/api/assignments/:email", async (req, res) => {
 // Fetch Submissions for an Assignment
 app.get("/api/submissions/:assignmentId", async (req, res) => {
     const assignmentId = req.params.assignmentId;
-    const teacherEmail = req.query.teacherEmail; // Get teacherEmail from query params
+    const teacherEmail = req.query.teacherEmail;
 
     if (!teacherEmail) {
         return res.status(400).json({ message: "Teacher email is required" });
     }
 
     try {
-        // Check if the assignment belongs to the logged-in teacher
         const assignment = await TeacherAssignment.findOne({ _id: assignmentId, teacherEmail });
         if (!assignment) {
             return res.status(403).json({ message: "You are not authorized to view these submissions" });
         }
 
-        // Fetch submissions for the assignment
         const submissions = await Submission.find({ assignmentId });
         res.json(submissions);
     } catch (error) {
@@ -346,9 +396,7 @@ app.get("/api/download/:filename", (req, res) => {
     const filename = req.params.filename;
     const filePath = path.join(__dirname, "uploads", filename);
 
-    // Check if the file exists
     if (fs.existsSync(filePath)) {
-        // Set headers to force download
         res.download(filePath, filename, (err) => {
             if (err) {
                 console.error("Error downloading file:", err);
@@ -434,8 +482,35 @@ app.post("/api/create-assignment", async (req, res) => {
     }
 
     try {
+        const teacher = await Teacher.findOne({ email: teacherEmail });
+        if (!teacher) {
+            return res.status(404).json({ message: "Teacher not found" });
+        }
+
         const newAssignment = new TeacherAssignment({ title, description, dueDate, teacherEmail });
         await newAssignment.save();
+        
+        // Create notification with error handling
+        try {
+            const notification = new Notification({
+                type: 'ASSIGNMENT',
+                title: `New Assignment: ${title}`,
+                message: `Due: ${new Date(dueDate).toLocaleDateString()}`,
+                data: {
+                    assignmentId: newAssignment._id,
+                    teacherName: teacher.name,
+                    title,
+                    dueDate
+                },
+                link: `/assignments/${newAssignment._id}`
+            });
+            await notification.save();
+            console.log('Assignment notification created successfully:', notification);
+        } catch (notifError) {
+            console.error('Error creating assignment notification:', notifError);
+            // Don't fail the whole request if notification fails
+        }
+
         res.json({ message: "Assignment created successfully" });
     } catch (error) {
         res.status(500).json({ message: "Error creating assignment", error: error.message });
@@ -444,16 +519,14 @@ app.post("/api/create-assignment", async (req, res) => {
 
 // Fetch Assignments for a Specific Teacher
 app.get("/api/teacherAssignments", async (req, res) => {
-    const userRole = req.query.role; // Get the user's role from query params
-    const teacherEmail = req.query.teacherEmail; // Get teacherEmail if the user is a teacher
+    const userRole = req.query.role;
+    const teacherEmail = req.query.teacherEmail;
 
     try {
         let assignments;
         if (userRole === "Teacher" && teacherEmail) {
-            // Fetch assignments only for the logged-in teacher
             assignments = await TeacherAssignment.find({ teacherEmail });
         } else {
-            // Fetch all assignments for students
             assignments = await TeacherAssignment.find({});
         }
         res.json(assignments);
@@ -479,4 +552,488 @@ app.delete("/api/teacher/assignments/delete/:id", async (req, res) => {
 // Serve Uploaded Files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.listen(5000, () => console.log("🚀 Server running on port 5000"));
+// Endpoint to upload video (Google Drive embed link)
+// Updated video upload endpoint
+app.post("/api/videos", async (req, res) => {
+    const { title, url, teacherName, teacherId } = req.body;
+
+    if (!title || !url || !teacherName || !teacherId) {
+        return res.status(400).json({ message: "Title, URL, teacher name, and teacher ID are required" });
+    }
+
+    try {
+        const newVideo = new Video({ title, url, teacherName, teacherId });
+        await newVideo.save();
+        
+        // Create notification with error handling
+        try {
+            const notification = new Notification({
+                type: 'VIDEO',
+                title: `New Video: ${title}`,
+                message: `A new video has been uploaded by ${teacherName}`,
+                data: {
+                    videoId: newVideo._id,
+                    teacherName,
+                    title
+                },
+                link: `/videos/${newVideo._id}`
+            });
+            await notification.save();
+            console.log('Video notification created successfully:', notification);
+        } catch (notifError) {
+            console.error('Error creating video notification:', notifError);
+            // Don't fail the whole request if notification fails
+        }
+
+        res.json({ message: "Video uploaded successfully", url });
+    } catch (error) {
+        console.error("Error uploading video:", error);
+        res.status(500).json({ message: "Error uploading video" });
+    }
+});
+
+
+// Endpoint to fetch videos
+app.get("/api/videos", async (req, res) => {
+    try {
+        const videos = await Video.find();
+        res.json(videos);
+    } catch (error) {
+        console.error("Error fetching videos:", error);
+        res.status(500).json({ message: "Error fetching videos" });
+    }
+});
+
+// Fetch a single video by ID
+app.get("/api/videos/:id", async (req, res) => {
+    try {
+        const video = await Video.findById(req.params.id);
+        if (!video) {
+            return res.status(404).json({ message: "Video not found" });
+        }
+        res.json(video);
+    } catch (error) {
+        console.error("Error fetching video:", error);
+        res.status(500).json({ message: "Error fetching video" });
+    }
+});
+
+// Mark Attendance Endpoint
+app.post("/api/videos/:videoId/attendance", async (req, res) => {
+    const { videoId } = req.params;
+    const { studentEmail, watchPercentage } = req.body;
+
+    console.log(`Received attendance request:`, { videoId, studentEmail, watchPercentage });
+
+    if (!studentEmail || !watchPercentage) {
+        return res.status(400).json({ message: "Student email and watch percentage are required" });
+    }
+
+    try {
+        const existingAttendance = await Attendance.findOne({ videoId, studentEmail });
+        if (existingAttendance) {
+            return res.status(400).json({ message: "Attendance already marked for this video" });
+        }
+
+        if (watchPercentage >= 60) {
+            const newAttendance = new Attendance({
+                videoId,
+                studentEmail,
+                watchPercentage,
+            });
+
+            await newAttendance.save();
+            console.log("Attendance stored in DB:", newAttendance);
+            return res.json({ message: "Attendance marked successfully" });
+        } else {
+            console.log("Watch percentage below 60%. Attendance not stored.");
+            return res.status(400).json({ message: "Watch percentage is less than 60%" });
+        }
+    } catch (err) {
+        console.error("Error storing attendance:", err);
+        res.status(500).json({ message: "Error marking attendance", error: err.message });
+    }
+});
+
+// Fetch Attendance for a Student
+app.get("/api/attendance/student/:studentEmail", async (req, res) => {
+    const { studentEmail } = req.params;
+
+    try {
+        const attendanceRecords = await Attendance.find({ studentEmail });
+        if (attendanceRecords.length === 0) {
+            return res.status(404).json({ message: "No attendance records found for this student" });
+        }
+        res.json(attendanceRecords);
+    } catch (err) {
+        console.error("Error fetching attendance records:", err);
+        res.status(500).json({ message: "Error fetching attendance records", error: err.message });
+    }
+});
+
+// Fetch Attendance for a Video
+app.get("/api/attendance/video/:videoId", async (req, res) => {
+    const { videoId } = req.params;
+
+    try {
+        const attendanceRecords = await Attendance.find({ videoId });
+        res.json(attendanceRecords);
+    } catch (err) {
+        console.error("Error fetching attendance records:", err);
+        res.status(500).json({ message: "Error fetching attendance records", error: err.message });
+    }
+});
+
+// Chat Schema
+const ChatSchema = new mongoose.Schema({
+    videoId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    studentEmail: { type: String, required: true },
+    studentName: { type: String, required: true },
+    message: { type: String, required: true },
+    reply: { 
+        text: String,
+        repliedAt: Date,
+        teacherName: String
+    },
+    timestamp: { type: Date, default: Date.now }
+});
+
+// Create the Chat model
+const Chat = mongoose.model("Chat", ChatSchema, "chats");
+
+// Teacher Questions endpoint - Updated with unique path using teacher1
+app.get("/api/teacher1/unanswered-questions/:email", async (req, res) => {
+    const { email } = req.params;
+
+    try {
+        if (!email) {
+            return res.status(400).json({ message: "Teacher email is required" });
+        }
+
+        // Find teacher by email
+        const teacher = await Teacher.findOne({ email });
+        if (!teacher) {
+            return res.status(404).json({ message: "Teacher not found" });
+        }
+
+        // Find videos uploaded by this teacher
+        const videos = await Video.find({ teacherId: teacher._id });
+        
+        // Get video IDs
+        const videoIds = videos.map(video => video._id);
+
+        // Find unanswered questions for these videos
+        const questions = await Chat.find({
+            videoId: { $in: videoIds },
+            $or: [
+                { reply: { $exists: false } },
+                { reply: null }
+            ]
+        });
+
+        res.json(questions);
+    } catch (err) {
+        console.error('Error in questions endpoint:', err);
+        res.status(500).json({ message: "Error fetching questions" });
+    }
+});
+
+// Endpoint to submit teacher's reply to a question
+app.post("/api/teacher/questions/:questionId/reply", async (req, res) => {
+    const { questionId } = req.params;
+    const { reply, teacherName } = req.body;
+
+    if (!reply || !teacherName) {
+        return res.status(400).json({ message: "Reply text and teacher name are required" });
+    }
+
+    try {
+        const updatedQuestion = await Chat.findByIdAndUpdate(
+            questionId,
+            {
+                reply: {
+                    text: reply,
+                    repliedAt: new Date(),
+                    teacherName: teacherName
+                }
+            },
+            { new: true }
+        );
+
+        if (!updatedQuestion) {
+            return res.status(404).json({ message: "Question not found" });
+        }
+
+        res.json({ message: "Reply submitted successfully", question: updatedQuestion });
+    } catch (err) {
+        console.error('Error submitting reply:', err);
+        res.status(500).json({ message: "Error submitting reply", error: err.message });
+    }
+});
+
+// Chat endpoints
+app.post("/api/chat", async (req, res) => {
+    try {
+        const { videoId, studentEmail, studentName, message } = req.body;
+        
+        if (!videoId || !studentEmail || !studentName || !message) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const newChat = new Chat({ 
+            videoId, 
+            studentEmail, 
+            studentName, 
+            message,
+            reply: null  // Initialize reply field as null
+        });
+        await newChat.save();
+        
+        res.json({ success: true, message: "Message sent successfully" });
+    } catch (err) {
+        console.error("Error saving chat message:", err);
+        res.status(500).json({ message: "Error sending message" });
+    }
+});
+
+app.get("/api/chat/:videoId", async (req, res) => {
+    try {
+        const messages = await Chat.find({ videoId: req.params.videoId })
+            .sort({ timestamp: 1 })
+            .limit(50);
+        res.json(messages);
+    } catch (err) {
+        console.error("Error fetching chat messages:", err);
+        res.status(500).json({ message: "Error fetching messages" });
+    }
+});
+
+// Migration script to update existing chat documents
+app.get("/api/migrate-chats", async (req, res) => {
+    try {
+        const result = await Chat.updateMany(
+            { reply: { $exists: false } },
+            { $set: { reply: null } }
+        );
+        res.json({ 
+            message: "Migration completed", 
+            modifiedCount: result.modifiedCount 
+        });
+    } catch (err) {
+        console.error('Migration error:', err);
+        res.status(500).json({ message: "Error during migration", error: err.message });
+    }
+});
+
+
+// Add this near your other schemas (around line 130)
+// Notification Schema
+const NotificationSchema = new mongoose.Schema({
+    type: { type: String, enum: ['ASSIGNMENT', 'VIDEO', 'ANNOUNCEMENT'], required: true },
+    title: { type: String, required: true },
+    message: { type: String, required: true },
+    data: { type: mongoose.Schema.Types.Mixed }, // Additional data like assignment details
+    link: { type: String }, // Optional link to navigate to
+    read: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now }
+});
+const Notification = mongoose.model('Notification', NotificationSchema, 'notifications');
+
+// Add these endpoints near your other endpoints (around line 900)
+// Get all notifications
+app.get('/api/notifications', async (req, res) => {
+    try {
+        const notifications = await Notification.find().sort({ createdAt: -1 });
+        res.json(notifications);
+    } catch (err) {
+        console.error('Error fetching notifications:', err);
+        res.status(500).json({ message: 'Error fetching notifications' });
+    }
+});
+
+// Mark notification as read
+app.put('/api/notifications/:id/read', async (req, res) => {
+    try {
+        const notification = await Notification.findByIdAndUpdate(
+            req.params.id,
+            { $set: { read: true } },
+            { new: true }
+        );
+        res.json(notification);
+    } catch (err) {
+        console.error('Error marking notification as read:', err);
+        res.status(500).json({ message: 'Error marking notification as read' });
+    }
+});
+
+// Modify your video upload endpoint (around line 750) to create a notification
+app.post("/api/videos", async (req, res) => {
+    const { title, url, teacherName, teacherId } = req.body;
+
+    if (!title || !url || !teacherName || !teacherId) {
+        return res.status(400).json({ message: "Title, URL, teacher name, and teacher ID are required" });
+    }
+
+    try {
+        const newVideo = new Video({ title, url, teacherName, teacherId });
+        await newVideo.save();
+        
+        // Create notification
+        const notification = new Notification({
+            type: 'VIDEO',
+            title: `New Video: ${title}`,
+            message: `A new video has been uploaded by ${teacherName}`,
+            data: {
+                videoId: newVideo._id,
+                teacherName,
+                title
+            },
+            link: `/videos/${newVideo._id}`
+        });
+        await notification.save();
+
+        res.json({ message: "Video uploaded successfully", url });
+    } catch (error) {
+        console.error("Error uploading video:", error);
+        res.status(500).json({ message: "Error uploading video" });
+    }
+});
+
+// Modify your assignment creation endpoint (around line 650) to create a notification
+app.post("/api/create-assignment", async (req, res) => {
+    const { title, description, dueDate, teacherEmail } = req.body;
+
+    if (!title || !description || !dueDate || !teacherEmail) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    try {
+        // Find teacher to get their name
+        const teacher = await Teacher.findOne({ email: teacherEmail });
+        if (!teacher) {
+            return res.status(404).json({ message: "Teacher not found" });
+        }
+
+        const newAssignment = new TeacherAssignment({ title, description, dueDate, teacherEmail });
+        await newAssignment.save();
+        
+        // Create notification
+        const notification = new Notification({
+            type: 'ASSIGNMENT',
+            title: `New Assignment: ${title}`,
+            message: `Due: ${new Date(dueDate).toLocaleDateString()}`,
+            data: {
+                assignmentId: newAssignment._id,
+                teacherName: teacher.name,
+                title,
+                dueDate
+            },
+            link: `/assignments/${newAssignment._id}`
+        });
+        await notification.save();
+
+        res.json({ message: "Assignment created successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error creating assignment", error: error.message });
+    }
+});
+
+// Add this with your other endpoints
+app.get('/api/notifications/unread-count', async (req, res) => {
+    try {
+        const count = await Notification.countDocuments({ read: false });
+        res.json({ count });
+    } catch (err) {
+        console.error('Error counting unread notifications:', err);
+        res.status(500).json({ message: 'Error counting unread notifications' });
+    }
+});
+
+// Add this near your other routes in server.js
+
+// Get all student emails
+app.get("/api/students/all", async (req, res) => {
+    try {
+        const students = await Student.find({}, 'email fullName course');
+        res.json(students);
+    } catch (err) {
+        console.error("Error fetching student emails:", err);
+        res.status(500).json({ message: "Error fetching student emails" });
+    }
+});
+
+// Get performance data for a specific student
+// Update the performance endpoint to include assignment details
+app.get("/api/performance/:studentEmail", async (req, res) => {
+    try {
+        const { studentEmail } = req.params;
+
+        // Get student info
+        const studentInfo = await Student.findOne({ email: studentEmail }, 'fullName email course');
+        if (!studentInfo) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+
+        // Get attendance data
+        const attendanceRecords = await Attendance.find({ studentEmail });
+        const totalClassesAvailable = await Video.countDocuments();
+        const totalClassesAttended = attendanceRecords.length;
+        const attendancePercentage = totalClassesAvailable > 0 
+            ? (totalClassesAttended / totalClassesAvailable) * 100 
+            : 0;
+
+        // Get quiz data
+        const quizResults = await QuizResult.find({ studentEmail });
+        const averageScore = quizResults.length > 0 
+            ? quizResults.reduce((sum, result) => sum + result.score, 0) / quizResults.length 
+            : 0;
+
+        // Get assignment data - modified to match your structure
+        const submissions = await Submission.find({ email: studentEmail });
+        const allAssignments = await TeacherAssignment.find();
+        const totalAssignments = allAssignments.length;
+        
+        // Create detailed assignment data
+        const assignmentDetails = allAssignments.map(assignment => {
+            const submission = submissions.find(sub => sub.assignmentId === assignment._id.toString());
+            return {
+                assignmentId: assignment._id,
+                title: assignment.title,
+                dueDate: assignment.dueDate,
+                submitted: !!submission,
+                submissionDate: submission ? submission.createdAt : null,
+                fileName: submission ? submission.fileName : null,
+                filePath: submission ? submission.filePath : null
+            };
+        });
+
+        res.json({
+            studentInfo,
+            attendance: {
+                totalClassesAvailable,
+                totalClassesAttended,
+                attendancePercentage,
+                records: attendanceRecords
+            },
+            quizzes: {
+                averageScore,
+                quizResults,
+                totalQuizzesTaken: quizResults.length
+            },
+            assignments: {
+                totalAssignments,
+                assignmentsSubmitted: submissions.length,
+                assignmentCompletionPercentage: totalAssignments > 0 
+                    ? (submissions.length / totalAssignments) * 100 
+                    : 0,
+                details: assignmentDetails
+            }
+        });
+    } catch (err) {
+        console.error("Error fetching performance data:", err);
+        res.status(500).json({ message: "Error fetching performance data" });
+    }
+});
+
+// Start the server
+app.listen(5000, () => console.log("🚀 Server running on port 5000")); 

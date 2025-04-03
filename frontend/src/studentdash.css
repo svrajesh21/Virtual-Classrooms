@@ -1,15 +1,14 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #7b7b7c;
+    
     overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 .header {
-    background-color:#1C2833;
-    color: rgb(255, 255, 255);
-    text-align: center; /* Center the heading text */
-    padding: 20 px;
+    background-color: #1C2833;
+    color: white;
+    padding: 20px;
     font-size: 30px;
     font-weight: bold;
     position: fixed;
@@ -19,9 +18,14 @@ body {
     z-index: 1000;
     display: flex;
     align-items: center;
-    justify-content: center; /* Center the heading horizontally */
-    gap: 10px;
 }
+
+.header-title {
+    flex: 1;
+    text-align: center;
+    margin: 0 auto;
+}
+
 /* Image Container */
 .image-container {
     width: 50%;
@@ -236,7 +240,7 @@ body {
 .course-image1 {
     flex: 1;
     height: 450px; /* Adjust height */
-    background-image: url('https://motivirus.com/wp-content/uploads/2020/09/virtual-classroom-software-for-remote-teams.jpg');
+    background-image: url('https://www.trainingfolks.com/hs-fs/hubfs/Benefits%20of%20virtual%20instructor%20led%20training.png?width=485&name=Benefits%20of%20virtual%20instructor%20led%20training.png');
     background-size: cover;
     background-position: center;
     border-radius: 10px;
@@ -398,7 +402,7 @@ body {
 
 /* Specific social media colors */
 .wrapper .facebook:hover {
-    background: #000000;
+    background: #4200f7;
 }
 
 .wrapper .twitter:hover {
@@ -406,7 +410,7 @@ body {
 }
 
 .wrapper .instagram:hover {
-    background: #000000;
+    background: #d1267c;
 }
 
 /* Tooltip styles */
@@ -482,4 +486,56 @@ body {
     background-color: #6b6b6b
     
     ; /* Darker teal on hover */
+}
+
+
+/* Add to studentdash.css */
+.notification-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.notification-icon:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.header {
+    position: relative; /* Add this to make sure the notification icon is positioned correctly */
+}
+.notification-bell {
+    position: absolute;
+    right: 30px; /* Increased from 20px for more padding */
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+    padding-top: 10px;
+    margin-left: auto; /* Pushes it to the far right */
+}
+
+.notification-bell:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.notification-badge {
+    position: absolute;
+    top: 50px;
+    right: -5px;
+    background-color: #ff4444;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
 }
