@@ -106,7 +106,7 @@ Developed by **SV Rajesh**
 
 Feel free to reach out for collaboration or feedback!
 
-📧 **Email**: svrajesh21@example.com  
+📧 **Email**: svrajesh21@gmail.com  
 🔗 **LinkedIn**: [S V Rajesh](https://www.linkedin.com/in/s-v-rajesh-126ab4265)  
 🐙 **GitHub**: [github.com/svrajesh21](https://github.com/svrajesh21)
 
