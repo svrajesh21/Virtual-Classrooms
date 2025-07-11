@@ -48,16 +48,16 @@ A full-stack web application that simplifies online teaching and learning, built
 | Frontend     | Backend      | Database |
 |--------------|--------------|----------|
 | React.js     | Node.js      | MongoDB  |
-| HTML, CSS    | Express.js   | Mongoose |
+
 
 ---
 
 ## 📂 Project Structure
 
 ```
-/client     → React frontend  
-/server     → Node.js + Express backend  
-/database   → MongoDB collections via Mongoose  
+/frontend     → React frontend  
+/backend      → Node.js   
+/database     → MongoDB   
 ```
 
 ---
