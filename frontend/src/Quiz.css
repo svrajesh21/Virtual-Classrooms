@@ -1,0 +1,103 @@
+/* Quiz.css */
+.parent-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    min-height: 100vh; /* Ensure the parent container takes up the full viewport height */
+    background-color: #f0f0f0; /* Optional: Add a background color for better visibility */
+    padding: 20px; /* Add some padding to avoid content touching the edges */
+}
+
+.quiz-container {
+    max-width: 800px;
+    width: 100%; /* Ensure the container takes up the full width */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.start-quiz {
+    text-align: center;
+    padding: 20px;
+}
+
+.start-quiz h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.start-quiz p {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.start-quiz button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.start-quiz button:hover {
+    background-color: #45a049;
+}
+
+h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.question {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.question h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.option {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.option input {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.option label {
+    font-size: 1.1rem;
+    color: #555;
+    cursor: pointer;
+}
+
+
+
+
+
+.result {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.result h2 {
+    font-size: 1.8rem;
+    color: #333;
+}

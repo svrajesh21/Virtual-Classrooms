@@ -1,0 +1,112 @@
+/* Attendance.css */
+
+/* General Styles */
+.student-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5; /* Light background for the dashboard */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.student-dashboard h1 {
+    font-size: 32px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.video-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 0;
+}
+
+/* Video Card Styles */
+.video-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    overflow: hidden; /* Ensure the glowing border doesn't overflow */
+    border: 2px solid transparent; /* Transparent border for glowing effect */
+    animation: border-glow 3s infinite alternate; /* Glowing border animation */
+}
+
+@keyframes border-glow {
+    0% {
+        border-color: rgba(3, 3, 3, 0.3); /* Light blue glow */
+        box-shadow: 0 0 10px rgba(255, 202, 246, 0.3);
+    }
+    100% {
+        border-color: rgba(33, 34, 34, 0.8); /* Stronger blue glow */
+        box-shadow: 0 0 20px rgba(112, 112, 112, 0.8);
+    }
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 123, 255, 0.6); /* Enhanced glow on hover */
+}
+
+.video-card h3 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.video-card p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+/* Attendance Status Styles */
+.attendance-present {
+    color: #28a745; /* Green for present */
+    font-weight: 600;
+}
+
+.attendance-absent {
+    color: #dc3545; /* Red for absent */
+    font-weight: 600;
+}
+
+/* Optional: Add a subtle animation for attendance status */
+.video-card p span {
+    transition: color 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .student-dashboard {
+        padding: 15px;
+    }
+
+    .student-dashboard h1 {
+        font-size: 28px;
+    }
+
+    .video-card {
+        padding: 15px;
+    }
+
+    .video-card h3 {
+        font-size: 20px;
+    }
+
+    .video-card p {
+        font-size: 14px;
+    }
+}

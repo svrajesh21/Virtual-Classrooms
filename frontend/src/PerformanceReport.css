@@ -1,0 +1,156 @@
+/* General Styles */
+.performance-report {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.performance-report h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+    animation: fadeInDown 1s ease-in-out;
+}
+
+/* Attendance Chart Section */
+.attendance-chart {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: slideInLeft 1s ease-in-out;
+}
+
+.attendance-chart h2 {
+    font-size: 1.8rem;
+    color: #36A2EB;
+    margin-bottom: 15px;
+}
+
+.attendance-chart p {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #555;
+    margin-top: 15px;
+}
+
+/* Quiz Chart Section */
+.quiz-chart {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: slideInRight 1s ease-in-out;
+    width: 85%; /* Adjust this value to control the width */
+    margin: 0 auto;
+}
+
+.quiz-chart h2 {
+    font-size: 1.8rem;
+    color: #4CAF50;
+    margin-bottom: 15px;
+}
+
+.quiz-chart p {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #555;
+    margin-top: 15px;
+}
+
+
+.chart-container {
+    position: relative;
+    margin: auto;
+    max-width: 350px; /* Increased from 300px */
+    height: 200px; /* Increased from 150px */
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .performance-report {
+        padding: 15px;
+    }
+
+    .performance-report h1 {
+        font-size: 2rem;
+    }
+
+    .attendance-chart h2,
+    .quiz-chart h2 {
+        font-size: 1.5rem;
+    }
+
+    .attendance-chart p,
+    .quiz-chart p {
+        font-size: 1rem;
+    }
+
+    .chart-container {
+        height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .performance-report {
+        padding: 10px;
+    }
+
+    .performance-report h1 {
+        font-size: 1.8rem;
+    }
+
+    .attendance-chart h2,
+    .quiz-chart h2 {
+        font-size: 1.3rem;
+    }
+
+    .attendance-chart p,
+    .quiz-chart p {
+        font-size: 0.9rem;
+    }
+
+    .chart-container {
+        height: 200px;
+    }
+}

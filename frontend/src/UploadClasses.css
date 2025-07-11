@@ -1,0 +1,88 @@
+/* UploadClasses.css */
+
+.upload-classes-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.upload-classes-container h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 25px;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.upload-classes-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.upload-classes-container form div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.upload-classes-container label {
+    font-size: 16px;
+    color: #555;
+    font-weight: 500;
+}
+
+.upload-classes-container input {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.upload-classes-container input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+.upload-classes-container button {
+    padding: 12px 20px;
+    font-size: 12px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.upload-classes-container button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.upload-classes-container button:active {
+    transform: translateY(0);
+}
+
+.upload-classes-container p {
+    margin-top: 20px;
+    font-size: 12px;
+    color: #333;
+    text-align: center;
+}
+
+.upload-classes-container .back-button {
+    margin-top: 20px;
+    background-color: #007bff;
+    font-size: 12px; /* Reduced font size for the back button */
+}
+
+.upload-classes-container .back-button:hover {
+    background-color: #0056b3;
+}

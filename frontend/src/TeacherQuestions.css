@@ -1,0 +1,162 @@
+/* TeacherQuestions.css */
+.teacher-questions-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .teacher-questions-container h2 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+  }
+  
+  .loading, .no-questions {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+  }
+  
+  .questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .question-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .question-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .student-name {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .video-title1 {
+    color: #4285f4;
+    font-weight: 500;
+    flex-grow: 1;
+    text-align: center;
+    background: #e8f0fe;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  
+  .question-time {
+    color: #666;
+  }
+  
+  .question-content {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+  }
+  
+  .reply-btn {
+    padding: 8px 15px;
+    background-color: #a6d6da;
+    color: rgb(255, 255, 255);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  
+  .reply-btn:hover {
+    background-color: #3367d6;
+  }
+  
+  .reply-section {
+    margin-top: 15px;
+  }
+  
+  .reply-section textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: 10px;
+  }
+  
+  .reply-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .reply-actions button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .reply-actions button:first-child {
+    background-color: #0f9d58;
+    color: white;
+  }
+  
+  .reply-actions button:first-child:hover {
+    background-color: #0b8043;
+  }
+  
+  .reply-actions button:first-child:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .reply-actions .cancel-btn {
+    background-color: #f1f1f1;
+    color: #333;
+  }
+  
+  .reply-actions .cancel-btn:hover {
+    background-color: #e0e0e0;
+  }
+  
+  /* Update VideoPlayer.css to add teacher reply styles */
+  .teacher-reply {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #e8f5e9;
+    border-radius: 4px;
+    border-left: 3px solid #0f9d58;
+  }
+  
+  .reply-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+  }
+  
+  .reply-header strong {
+    color: #0b8043;
+  }
+  
+  .reply-time {
+    color: #666;
+  }
+  
+  .reply-content {
+    color: #333;
+    line-height: 1.4;
+  }
